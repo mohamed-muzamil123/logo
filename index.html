@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elysium: The Reveal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Global Reset and Premium Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Primary: Deep Black/Dark Cosmic */
+            background: #000000; 
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            /* Subtle Background Haze/Glow */
+            background-image: radial-gradient(circle at 50% 50%, rgba(255, 179, 71, 0.05) 0%, transparent 70%);
+        }
+
+        #reveal-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .hidden {
+            display: none !important;
+            opacity: 0;
+        }
+
+        /* --- 1. Initiate Button (Glassmorphic/Metallic Glow) --- */
+        #initiate-btn {
+            width: clamp(250px, 30vw, 400px);
+            height: clamp(250px, 30vw, 400px);
+            border-radius: 50%;
+            /* Semi-transparent metallic base */
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 179, 71, 0.2);
+            /* Glassmorphic blur */
+            backdrop-filter: blur(5px);
+            
+            color: #ffb347;
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            /* Multi-layered cinematic glow */
+            box-shadow: 
+                0 0 15px rgba(255, 179, 71, 0.5), /* Soft inner glow */
+                0 0 30px rgba(0, 255, 217, 0.3), /* Subtle cyan accent */
+                0 0 80px rgba(255, 179, 71, 0.2); /* Wide diffusion glow */
+        }
+
+        #initiate-btn:hover {
+            box-shadow: 
+                0 0 30px #ffb347, 
+                0 0 60px #00ffd9,
+                0 0 120px rgba(255, 179, 71, 0.8);
+            transform: scale(1.05);
+            background: rgba(255, 179, 71, 0.1);
+        }
+
+        /* --- 2. Countdown (Huge Cinematic Numbers) --- */
+        #countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(150px, 45vw, 600px); /* Massive scale */
+            font-weight: 900; /* Extra bold */
+            color: #ffb347;
+            text-align: center;
+            line-height: 1;
+
+            /* Layered, intense neon glow */
+            text-shadow: 
+                0 0 10px rgba(255, 255, 255, 0.8), /* Inner white hot core */
+                0 0 40px #ffb347, /* Warm gold neon */
+                0 0 80px #ffb347, 
+                0 0 150px #00ffd9; /* Far cyan diffusion */
+
+            z-index: 5;
+            filter: drop-shadow(0 0 40px rgba(0, 255, 217, 0.5));
+        }
+
+        /* --- 3. Logo Reveal (Dominant, Spotlight Effect) --- */
+        #logo-reveal, #final-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: clamp(400px, 60vw, 700px); /* Larger logos */
+            height: auto;
+            opacity: 0;
+            z-index: 5;
+            /* Subtle radial light/spotlight effect */
+            background-image: radial-gradient(circle at 50% 50%, rgba(255, 179, 71, 0.08) 0%, transparent 60%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #final-logo {
+            width: clamp(500px, 70vw, 850px);
+        }
+
+        #logo-img, #final-logo-img {
+            width: 100%;
+            height: auto;
+            /* Refined glow for logos */
+            filter: 
+                drop-shadow(0 0 30px #ffb347) 
+                drop-shadow(0 0 60px #00ffd9) 
+                drop-shadow(0 0 120px rgba(255, 179, 71, 0.4));
+        }
+
+        /* --- 4. Highlight Section (Cinematic Spotlight) --- */
+        #melanie-highlight {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            color: #ffffff; /* White core */
+            text-align: center;
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            
+            /* Cinematic gold/teal glow on text */
+            text-shadow: 
+                0 0 10px #ffb347, 
+                0 0 30px #ffb347, 
+                0 0 60px #00ffd9;
+            
+            opacity: 0;
+            z-index: 5;
+
+            /* Subtle gradient background/spotlight */
+            padding: 20px 40px;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 179, 71, 0.1) 0%, transparent 80%);
+            border-radius: 10px;
+        }
+
+        /* --- 5. Explanations (Floating Cinematic Cards) --- */
+        #explanations-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95%;
+            max-width: 1200px;
+            opacity: 0;
+            z-index: 5;
+        }
+
+        .explanation-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 40px 30px;
+            
+            /* Floating Card Style: Semi-transparent, blurred background */
+            background: rgba(20, 20, 20, 0.8);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 179, 71, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 255, 217, 0.1);
+        }
+
+        .explanation-section.active {
+            display: flex;
+        }
+
+        .explanation-section h2 {
+            color: #ffb347;
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px #ffb347;
+        }
+
+        .explanation-section p {
+            color: #ffffff;
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            line-height: 1.8;
+            margin-bottom: 30px;
+            max-width: 800px;
+            /* Subtle glow for text readability on dark card */
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.2); 
+        }
+
+        .explanation-section img {
+            width: clamp(250px, 40vw, 450px);
+            height: auto;
+            border-radius: 8px;
+            /* Cinematic image glow */
+            filter: drop-shadow(0 0 20px rgba(255, 179, 71, 0.6)) drop-shadow(0 0 40px rgba(0, 255, 217, 0.2));
+            max-height: 50vh;
+            object-fit: contain;
+            transition: all 1s ease; /* For GSAP scaling */
+        }
+        
+        /* --- 6. Thank You (Cinematic Text) --- */
+        #thank-you {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: #ffffff;
+            text-align: center;
+            font-weight: 900;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            
+            /* Intense cinematic glow */
+            text-shadow: 
+                0 0 15px #ffb347, 
+                0 0 40px #ffb347, 
+                0 0 80px #00ffd9;
+
+            opacity: 0;
+            z-index: 5;
+        }
+
+        /* --- 7. Responsive Layout for Explanations --- */
+        @media (min-width: 769px) {
+            .explanation-section {
+                flex-direction: row;
+                justify-content: center;
+                gap: 80px;
+                align-items: center;
+                text-align: left;
+            }
+
+            .explanation-section img {
+                order: 2;
+                flex-shrink: 0;
+                width: clamp(350px, 40vw, 550px);
+            }
+
+            .explanation-section .text-content {
+                flex: 1;
+                max-width: 45%;
+                order: 1;
+            }
+
+            /* Alternate image side for visual balance */
+            #exp2 img, #exp4 img {
+                order: 1;
+            }
+            #exp2 .text-content, #exp4 .text-content {
+                order: 2;
+                text-align: right;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .explanation-section {
+                flex-direction: column;
+                padding: 30px 15px;
+            }
+
+            .explanation-section img {
+                width: 90vw;
+                max-width: 350px;
+                margin-top: 20px;
+            }
+        }
+
+        /* Particle canvas overlay */
+        #particles-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            /* Soft radial background glow for depth */
+            background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 217, 0.05) 0%, transparent 90%);
+        }
+
+        /* Sprouting Text */
+        #sprouting-text {
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            letter-spacing: 3px;
+            font-size: clamp(2rem, 4vw, 4rem);
+            text-shadow: 0 0 15px #ffb347, 0 0 40px #ffb347, 0 0 80px #00ffd9;
+            text-align: center;
+            margin-top: clamp(1rem, 2vw, 2rem);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="reveal-container">
+        <canvas id="particles-canvas"></canvas>
+        <button id="initiate-btn">Initiate Elysium</button>
+        <div id="countdown" class="hidden">
+            <div class="number">3</div>
+        </div>
+        <div id="logo-reveal" class="hidden">
+            <img id="logo-img" src="logo.png" alt="Elysium Logo">
+        </div>
+        <div id="melanie-highlight" class="hidden">Elysium. The Future is Here.</div> 
+        <div id="explanations-container" class="hidden">
+            <div class="explanation-section active" id="exp1">
+                <div class="text-content">
+                    <h2>EDUCATION</h2>
+                    <p>EDUCATION IS THE ACT OR PROCESS OF IMPARTING OR
+ACQUIRING GENERAL KNOWLEDGE, DEVELOPING THE
+POWERS OF REASONING AND JUDGMENT, AND GENERALLY
+PREPARING ONE SELF OR OTHERS INTELLECTUALLY FOR
+MATURE LIFE.
+IT IS A TOOL FOR PERSONAL AND SOCIETAL DEVELOPMENT,
+HELPING INDIVIDUALS BECOME INFORMED, PRODUCTIVE,
+AND RESPONSIBLE MEMBERS OF THEIR COMMUNITY.
+</p>
+                </div>
+                <img src="exp1.png" alt="Explanation 1 Image">
+            </div>
+            <div class="explanation-section" id="exp2">
+                <div class="text-content">
+                    <h2>FAMILY</h2>
+                    <p>A FAMILY IS GENERALLY DEFINED AS A GROUP OF
+PEOPLE WHO ARE RELATED TO EACH OTHER BY BLOOD
+(CONSANGUINITY), MARRIAGE (AFFINITY), OR ADOPTION.
+THEY USUALLY LIVE TOGETHER IN ONE HOUSEHOLD.
+THE MEMBERS ARE EXPECTED TO CARE FOR, SUPPORT, AND
+PROTECT ONE ANOTHER.
+IT SERVES AS THE MAIN SOURCE OF LOVE, EMOTIONAL
+SUPPORT, SAFETY, AND SOCIALIZATION FOR ITS MEMBERS.</p>
+                </div>
+                <img src="exp2.png" alt="Explanation 2 Image">
+            </div>
+            <div class="explanation-section" id="exp3">
+                <div class="text-content">
+                    <h2>TECHNOLOGY</h2>
+                    <p>TECHNOLOGY IS THE APPLICATION OF SCIENTIFIC
+KNOWLEDGE TO THE PRACTICALAIMS OF HUMAN
+LIFE. ESSENTIALLY, IT INVOLVES CREATING TOOLS,
+SYSTEMS, AND METHODS TO SOLVE PROBLEMS
+AND MAKE HUMAN LIFE EASIER, BETTER, OR MORE
+EFFICIENT.</p>
+                </div>
+                <img src="exp3.png" alt="Explanation 3 Image">
+            </div>
+            <div class="explanation-section" id="exp4">
+                <div class="text-content">
+                    <h2>KNOWLEDGE</h2>
+                    <p>KNOWLEDGE IS THE COLLECTION OF FACTS,
+INFORMATION, SKILLS, AND UNDERSTANDING
+THAT A PERSON GAINS THROUGH EXPERIENCЕ
+OR EDUCATION. IT IS THE STATE OF KNOWING
+OR BEING FAMILIAR WITH SOMETHING.
+</p>
+                </div>
+                <img src="exp4.png" alt="Explanation 4 Image">
+            </div>
+            <div class="explanation-section" id="exp5">
+                <div class="text-content">
+                    <h2>SPIRAL</h2>
+                    <p>THIS SPIRAL DESIGN INDICATES REWINDING.
+HERE WE REWINDING AN ERA.....
+</p>
+                </div>
+                <img src="exp5.png" alt="Explanation 5 Image">
+            </div>
+        </div>
+        <div id="thank-you" class="hidden">...CONGRATULATIONS...</div>
+        <div id="final-logo" class="hidden">
+            <img id="final-logo-img" src="logo.png" alt="Elysium Logo">
+            <div id="sprouting-text">SPROUTING OF ART.....</div>
+        </div>
+    </div>
+
+    <script>
+        // GSAP Animations (KEEPING ORIGINAL LOGIC, ONLY MINOR TWEAKS FOR AESTHETICS)
+        const btn = document.getElementById('initiate-btn');
+        const countdown = document.getElementById('countdown');
+        const logoReveal = document.getElementById('logo-reveal');
+        const melanieHighlight = document.getElementById('melanie-highlight');
+        const explanationsContainer = document.getElementById('explanations-container');
+        const thankYou = document.getElementById('thank-you');
+        const finalLogo = document.getElementById('final-logo');
+        const sproutingText = document.getElementById('sprouting-text');
+        const particlesCanvas = document.getElementById('particles-canvas');
+        const ctx = particlesCanvas.getContext('2d');
+
+        // Set canvas size
+        function resizeCanvas() {
+            particlesCanvas.width = window.innerWidth;
+            particlesCanvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Enhanced particle system (Reduced friction and gravity for more "cosmic" feel)
+        let particles = [];
+        class Particle {
+            constructor(x, y, vx, vy, color, life, size = 2) {
+                this.x = x;
+                this.y = y;
+                // Slightly reduced randomization in velocity for smoother trails
+                this.vx = vx + (Math.random() - 0.5) * 1; 
+                this.vy = vy + (Math.random() - 0.5) * 1;
+                this.color = color;
+                this.life = life;
+                this.maxLife = life;
+                this.size = size;
+                this.trail = []; 
+            }
+            update() {
+                // Increased trail length and density for smooth shimmer
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > 20) this.trail.shift(); 
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.005; // Very gentle "cosmic" drift/gravity
+                this.vx *= 0.995; // Less friction
+                this.life--;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life / this.maxLife;
+                
+                // Draw trail with soft transition
+                for (let i = 0; i < this.trail.length; i++) {
+                    ctx.globalAlpha = (i / this.trail.length) * (this.life / this.maxLife) * 0.5; // Softer trail opacity
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.trail[i].x, this.trail[i].y, this.size * (i / this.trail.length + 0.5) * 0.8, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Draw main particle with intense glow
+                ctx.globalAlpha = this.life / this.maxLife;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 15; // Increased blur for stronger glow
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.restore();
+            }
+        }
+
+        function createParticles(x, y, count, color = '#ffb347', burst = false) {
+            for (let i = 0; i < count; i++) {
+                const angle = burst ? (Math.PI * 2 * i) / count + Math.random() * 0.3 : Math.PI * 2 * Math.random();
+                const speed = burst ? Math.random() * 3 + 1 : Math.random() * 0.8 + 0.3; // Slower, more elegant speed
+                const size = Math.random() * 2 + 1; // Slightly smaller size for refinement
+                particles.push(new Particle(
+                    x, y,
+                    Math.cos(angle) * speed,
+                    Math.sin(angle) * speed - (burst ? 0.8 : 0),
+                    color,
+                    180 + Math.random() * 100, // Longer life for longer trails
+                    size
+                ));
+            }
+        }
+
+        function animateParticles() {
+            // Semi-transparent overlay for subtle trail persistence (cinematic motion blur)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
+            ctx.fillRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+
+            particles = particles.filter(p => {
+                p.update();
+                p.draw();
+                return p.life > 0;
+            });
+            // Reduced rate of background particles for a cleaner look
+            if (Math.random() < 0.02) { 
+                createParticles(
+                    Math.random() * particlesCanvas.width,
+                    Math.random() * particlesCanvas.height,
+                    1,
+                    Math.random() > 0.8 ? '#00ffd9' : '#ffb347'
+                );
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Typewriter function for paragraphs
+        function typeWriter(el, text, speed = 40, callback) {
+            el.innerHTML = '';
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else if (callback) {
+                    callback();
+                }
+            }
+            type();
+        }
+
+        // --- PHASE LOGIC (KEPT INTACT) ---
+
+        // Phase 0: Initiate Button Click
+        btn.addEventListener('click', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = rect.left + rect.width / 2 + window.scrollX;
+            const y = rect.top + rect.height / 2 + window.scrollY;
+
+            createParticles(x, y, 60, '#ffb347', true);
+            createParticles(x, y, 20, '#00ffd9', true);
+
+            gsap.to(btn, {
+                scale: 1.15,
+                boxShadow: '0 0 100px #ffb347, 0 0 200px #00ffd9',
+                duration: 0.5,
+                ease: 'elastic.out(1, 0.3)'
+            });
+
+            btn.style.pointerEvents = 'none';
+            setTimeout(() => {
+                gsap.to(btn, { opacity: 0, scale: 0.8, duration: 0.6, ease: 'power3.in' });
+                gsap.to('#particles-canvas', { opacity: 1, duration: 1.5 }); // Increased duration for smoother fade
+                setTimeout(startPhase1, 800);
+            }, 500);
+        });
+
+        // Phase 1: Countdown
+        function startPhase1() {
+            countdown.classList.remove('hidden');
+            gsap.fromTo(countdown, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 1, ease: 'elastic.out(1, 0.5)' });
+
+            const numbers = [3, 2, 1];
+            let index = 0;
+            const numEl = document.querySelector('.number');
+
+            const countdownInterval = setInterval(() => {
+                const rect = numEl.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2 + window.scrollX;
+                const cy = rect.top + rect.height / 2 + window.scrollY;
+                // Larger particle bursts for countdown
+                createParticles(cx, cy, 60, '#ffb347', true);
+                createParticles(cx, cy, 20, '#00ffd9', true);
+
+                // Stronger dynamic effect
+                gsap.to(numEl, {
+                    scale: 1.1,
+                    textShadow: '0 0 150px #ffb347, 0 0 250px #00ffd9',
+                    duration: 0.6,
+                    yoyo: true,
+                    repeat: 1,
+                    ease: 'power3.inOut'
+                });
+
+                numEl.textContent = numbers[index];
+                index++;
+
+                if (index >= numbers.length) {
+                    clearInterval(countdownInterval);
+                    gsap.to(countdown, { opacity: 0, scale: 0.8, duration: 0.8, ease: 'power3.in' });
+                    setTimeout(startPhase2, 1000); // Slightly longer wait for cinematic feel
+                }
+            }, 1500); // Slightly longer countdown interval
+        }
+
+        // Phase 2: Logo Reveal
+        function startPhase2() {
+            logoReveal.classList.remove('hidden');
+            gsap.fromTo(logoReveal, { opacity: 0, scale: 0.3 }, {
+                opacity: 1,
+                scale: 1,
+                duration: 2.5, // Increased duration
+                ease: 'elastic.out(1, 0.4)'
+            });
+
+            // Pulsing glow is now controlled by CSS (for the filter: drop-shadow part)
+            // GSAP for subtle background pulsing for the spotlight effect
+            gsap.to(logoReveal, {
+                background: 'radial-gradient(circle at 50% 50%, rgba(255, 179, 71, 0.15) 0%, transparent 60%)',
+                duration: 3,
+                yoyo: true,
+                repeat: -1,
+                ease: 'sine.inOut'
+            });
+
+
+            // Swirling particles around logo (Made more subtle/refined)
+            const swirlInterval = setInterval(() => {
+                const logoRect = logoReveal.getBoundingClientRect();
+                const centerX = logoRect.left + logoRect.width / 2 + window.scrollX;
+                const centerY = logoRect.top + logoRect.height / 2 + window.scrollY;
+                const angle = Math.PI * 2 * Math.random();
+                const radius = Math.random() * 300 + 100; // Closer range
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                // Fewer particles per burst
+                createParticles(x, y, 2, Math.random() > 0.6 ? '#00ffd9' : '#ffb347'); 
+            }, 150); // Slower interval
+
+            setTimeout(() => {
+                clearInterval(swirlInterval);
+            }, 5500);
+
+            setTimeout(startPhase3, 5000); // Longer display
+        }
+
+        // Phase 3: Highlight Text
+        function startPhase3() {
+            gsap.to(logoReveal, { opacity: 0, scale: 0.9, duration: 1.5, ease: 'power3.in' });
+            setTimeout(() => {
+                logoReveal.classList.add('hidden');
+            }, 1500);
+
+            melanieHighlight.classList.remove('hidden');
+            gsap.fromTo(melanieHighlight, { opacity: 0, y: 50 }, {
+                opacity: 1,
+                y: 0,
+                duration: 2,
+                ease: 'power3.out'
+            });
+
+            // Halo particles
+            const melanieInterval = setInterval(() => {
+                const rect = melanieHighlight.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2 + window.scrollX;
+                const cy = rect.top + rect.height / 2 + window.scrollY;
+                // Create a small, focused halo effect
+                createParticles(cx + (Math.random() - 0.5) * rect.width * 0.7, cy + (Math.random() - 0.5) * rect.height * 0.7, 1, '#00ffd9'); 
+                createParticles(cx + (Math.random() - 0.5) * rect.width * 0.7, cy + (Math.random() - 0.5) * rect.height * 0.7, 3, '#ffb347');
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(melanieInterval);
+                gsap.to(melanieHighlight, { opacity: 0, y: -50, duration: 1.5, ease: 'power3.in' });
+                setTimeout(startPhase4, 1500);
+            }, 5000);
+        }
+
+        // Phase 4: Explanations Flow
+        function startPhase4() {
+            melanieHighlight.classList.add('hidden');
+            explanationsContainer.classList.remove('hidden');
+            gsap.to(explanationsContainer, { opacity: 1, duration: 1.5, ease: 'power3.out' });
+
+            const sections = document.querySelectorAll('.explanation-section');
+            let currentSection = 0;
+            let currentAudio = null;
+
+            const audioMap = {
+                'exp1': 'EDUCATION.mp3',
+                'exp2': 'FAMILY.mp3',
+                'exp3': 'TECHNOLOGY.mp3',
+                'exp4': 'KNOWLEDGE.mp3',
+                'exp5': 'SPIRAL.mp3'
+            };
+
+            function showSection(idx) {
+                if (idx >= sections.length) {
+                    if (currentAudio) {
+                        currentAudio.pause();
+                        currentAudio = null;
+                    }
+                    gsap.to(explanationsContainer, { opacity: 0, duration: 1.5, ease: 'power3.in' });
+                    setTimeout(() => {
+                        explanationsContainer.classList.add('hidden');
+                    }, 1500);
+                    setTimeout(startPhase5, 1500);
+                    return;
+                }
+
+                sections.forEach((sec, i) => {
+                    if (i !== idx) sec.classList.remove('active');
+                });
+
+                const section = sections[idx];
+                section.classList.add('active');
+                
+                // Prepare paragraph for typing
+                const p = section.querySelector('p');
+                const fullText = p.innerHTML;
+                p.innerHTML = '';
+                
+                // Staggered cinematic entrance
+                gsap.fromTo(section.querySelector('.text-content'),
+                    { opacity: 0, x: idx % 2 === 0 ? -100 : 100 }, // Directional slide for alternating layout
+                    { opacity: 1, x: 0, duration: 1.8, ease: 'power3.out' }
+                );
+                gsap.fromTo(section.querySelector('img'),
+                    { opacity: 0, scale: 0.7, rotation: -5 },
+                    { opacity: 1, scale: 1, rotation: 0, duration: 2.5, delay: 0.5, ease: 'elastic.out(1, 0.5)' }
+                );
+
+                const sectionInterval = setInterval(() => {
+                    if (section.classList.contains('active')) {
+                        const rect = section.getBoundingClientRect();
+                        const cx = rect.left + rect.width / 2 + window.scrollX;
+                        const cy = rect.top + rect.height / 2 + window.scrollY;
+                        // Particles contained within the card's area (more focused)
+                        createParticles(
+                            cx + (Math.random() - 0.5) * rect.width * 0.4, 
+                            cy + (Math.random() - 0.5) * rect.height * 0.4, 
+                            1, 
+                            Math.random() > 0.7 ? '#00ffd9' : '#ffb347'
+                        );
+                    } else {
+                        clearInterval(sectionInterval);
+                    }
+                }, 400); // Slower particle flow
+
+                // Start typewriter after entrance (2s delay to sync with animations)
+                setTimeout(() => {
+                    // Pause previous audio
+                    if (currentAudio) {
+                        currentAudio.pause();
+                        currentAudio = null;
+                    }
+                    // Start new audio
+                    const audioSrc = audioMap[section.id];
+                    if (audioSrc) {
+                        currentAudio = new Audio(audioSrc);
+                        currentAudio.volume = 1.0;
+                        currentAudio.play().catch(e => console.log('Audio play failed:', e));
+                    }
+                    typeWriter(p, fullText, 40, () => {
+                        // After typing completes, wait 10 seconds
+                        setTimeout(() => {
+                            clearInterval(sectionInterval);
+                            // Cinematic exit animation
+                            gsap.to(section.querySelector('.text-content'), { opacity: 0, x: idx % 2 === 0 ? 100 : -100, duration: 1.5, ease: 'power3.in' });
+                            gsap.to(section.querySelector('img'), { opacity: 0, scale: 1.2, rotation: 5, duration: 1.5, ease: 'power3.in' });
+                            gsap.to(section, { boxShadow: '0 0 0 rgba(0,0,0,0)', duration: 1 }); // Remove glow on exit
+                            setTimeout(() => {
+                                showSection(idx + 1);
+                            }, 1500);
+                        }, 15000);
+                    });
+                }, 2000);
+
+            }
+
+            showSection(0);
+        }
+
+        // Phase 5: Thank You
+        function startPhase5() {
+            thankYou.classList.remove('hidden');
+            gsap.fromTo(thankYou, { opacity: 0, scale: 0.5 }, {
+                opacity: 1,
+                scale: 1,
+                duration: 2.2, // Increased duration
+                ease: 'elastic.out(1, 0.6)'
+            });
+
+            setTimeout(() => {
+                gsap.to(thankYou, {
+                    opacity: 0,
+                    scale: 1.2,
+                    duration: 1.8,
+                    ease: 'power3.in'
+                });
+                setTimeout(startPhase6, 1800);
+            }, 3000);
+        }
+
+        // Phase 6: Final Logo
+        function startPhase6() {
+            thankYou.classList.add('hidden');
+            finalLogo.classList.remove('hidden');
+            gsap.fromTo(finalLogo, { opacity: 0, scale: 0.2 }, {
+                opacity: 1,
+                scale: 1,
+                duration: 3, // Long duration for final dramatic reveal
+                ease: 'elastic.out(1, 0.4)'
+            });
+            gsap.fromTo(sproutingText, { opacity: 0 }, {
+                opacity: 1,
+                duration: 2,
+                ease: 'elastic.out(1, 0.4)'
+            });
+
+            // Swirling particles are already handled by the finalSwirl interval, which runs indefinitely
+        }
+    </script>
+</body>
+</html>
